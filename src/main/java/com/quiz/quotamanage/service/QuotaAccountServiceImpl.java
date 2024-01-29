@@ -15,6 +15,7 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
 
     @Override
     public void addQuotaAccount(Long userId, Integer accountType, Double quota) {
+        // 添加额度汇总表
         // todo 更新额度时，记录变更日志
 
     }
