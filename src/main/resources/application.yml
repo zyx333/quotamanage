@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    username: root_temp
+    password: 7tip1MoOMQHlZcIQ
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql.sqlpub.com:3306/account_manage?useSSL=false
+mybatis:
+  config-location: classpath:mybatis-config.xml
+  mapper-locations: classpath:mapper/*.xml

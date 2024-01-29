@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.1//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quiz.quotamanage.mapper.QuotaAccountMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO quota_account(
+            userid,
+            title,
+            askcat,
+            hide,
+            asktype
+        ) VALUES (
+                     #{userId},
+                     #{title},
+                     #{askCat},
+                     1,
+                     #{askType}
+                 )
+    </insert>
+
+    <select id="selectByUser">
+        SELECT * FROM quota_account
+        WHERE user_id = #{userId}
+        AND deleted = 0
+    </select>
+
+
+
+
+</mapper>
