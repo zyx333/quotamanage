@@ -4,7 +4,7 @@ package com.quiz.quotamanage;
 /**
  * 模拟分布式锁
  * @description:
- * @author: chixian
+ * @author: zyx
  * @date: 2024-01-30 18:11
  **/
 public class LockUtil {
