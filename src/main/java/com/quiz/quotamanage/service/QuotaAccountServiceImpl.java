@@ -1,6 +1,7 @@
 package com.quiz.quotamanage.service;
 
 import com.quiz.quotamanage.BizException;
+import com.quiz.quotamanage.LockUtil;
 import com.quiz.quotamanage.data.AccountTypeEnum;
 import com.quiz.quotamanage.data.QuotaAccountDto;
 import com.quiz.quotamanage.data.QuotaAccountPo;
@@ -17,12 +18,15 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class QuotaAccountServiceImpl implements QuotaAccountService {
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(QuotaAccountServiceImpl.class);
+
+    private static final String INIT_ACCOUNT_LOCK = "initAccountLock_%s";
 
     private static final Double DEFAULT_QUOTA = 10000.0;
 
@@ -37,14 +41,23 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
         if (AccountTypeEnum.getEnumByType(accountType) == null) {
             throw new BizException("账号类型不存在");
         }
-        // todo 分布式锁
 
         final UserAccountPo existedAccount = userAccountMapper.selectByUser(userId);
         if (existedAccount != null) {
             throw new BizException("账号已存在");
         }
 
-        quotaAccountManager.initAccount(userId, accountType, DEFAULT_QUOTA);
+        // 分布式锁
+        final String lockKey = String.format(INIT_ACCOUNT_LOCK, userId);
+        if (!LockUtil.lock(lockKey)) {
+            throw new BizException("请稍后重试");
+        }
+
+        try {
+            quotaAccountManager.initAccount(userId, accountType, DEFAULT_QUOTA);
+        } finally {
+            LockUtil.releaseLock(lockKey);
+        }
 
     }
 
