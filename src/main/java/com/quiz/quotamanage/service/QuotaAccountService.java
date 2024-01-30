@@ -2,6 +2,7 @@ package com.quiz.quotamanage.service;
 
 import com.quiz.quotamanage.BizException;
 import com.quiz.quotamanage.data.QuotaAccountDto;
+import com.quiz.quotamanage.data.UserAccountDto;
 
 public interface QuotaAccountService {
 
@@ -38,8 +39,7 @@ public interface QuotaAccountService {
     /**
      * 查询额度账号
      * @param userId
-     * @param accountType
      * @return
      */
-    QuotaAccountDto getQuotaAccountByUserAndType(Long userId, Integer accountType);
+    UserAccountDto getQuotaAccountByUserAndType(Long userId);
 }

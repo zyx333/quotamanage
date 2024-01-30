@@ -1,6 +1,6 @@
 package com.quiz.quotamanage.controller;
 
-import com.quiz.quotamanage.data.QuotaAccountDto;
+import com.quiz.quotamanage.data.UserAccountDto;
 import com.quiz.quotamanage.service.QuotaAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,10 +14,9 @@ public class QuotaAccountController {
 
 
     @GetMapping
-    public Double getQuotaAccount(@RequestParam("userId") Long userId,
-                                @RequestParam(value = "accountType", required = false) Integer accountType) {
+    public Double getQuotaAccount(@RequestParam("userId") Long userId) {
 
-        QuotaAccountDto account = quotaAccountService.getQuotaAccountByUserAndType(userId, accountType);
+        UserAccountDto account = quotaAccountService.getQuotaAccountByUserAndType(userId);
 
         return 0d;
     }

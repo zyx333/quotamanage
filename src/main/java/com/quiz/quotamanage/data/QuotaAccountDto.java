@@ -24,13 +24,6 @@ public class QuotaAccountDto {
      */
     private Double quota;
 
-
-    /**
-     * 删除状态，0  否， 1  是
-     */
-    private Integer deleted;
-
-
     /**
      * 创建时间
      */
@@ -40,5 +33,22 @@ public class QuotaAccountDto {
      * 更新时间
      */
     private Timestamp updatedTime;
+
+    public static QuotaAccountDto fromPo(QuotaAccountPo quotaAccountPo){
+        if (quotaAccountPo == null) {
+            return null;
+        }
+
+        QuotaAccountDto quotaAccountDto = new QuotaAccountDto();
+        quotaAccountDto.setId(quotaAccountPo.getId());
+        quotaAccountDto.setUserId(quotaAccountPo.getUserId());
+        quotaAccountDto.setAccountType(quotaAccountPo.getAccountType());
+        quotaAccountDto.setQuota(quotaAccountPo.getQuota());
+        quotaAccountDto.setCreatedTime(quotaAccountPo.getCreatedTime());
+        quotaAccountDto.setUpdatedTime(quotaAccountPo.getUpdatedTime());
+
+        return quotaAccountDto;
+
+    }
 
 }

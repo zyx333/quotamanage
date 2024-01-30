@@ -3,24 +3,31 @@ package com.quiz.quotamanage.service;
 import com.quiz.quotamanage.BizException;
 import com.quiz.quotamanage.data.QuotaAccountDto;
 import com.quiz.quotamanage.data.QuotaAccountPo;
+import com.quiz.quotamanage.data.UserAccountDto;
 import com.quiz.quotamanage.data.UserAccountPo;
 import com.quiz.quotamanage.manager.QuotaAccountManager;
 import com.quiz.quotamanage.mapper.QuotaAccountMapper;
 import com.quiz.quotamanage.mapper.QuotaUpdateLogMapper;
 import com.quiz.quotamanage.mapper.UserAccountMapper;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class QuotaAccountServiceImpl implements QuotaAccountService {
+    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(QuotaAccountServiceImpl.class);
 
     private final QuotaAccountMapper quotaAccountMapper;
 
     private final UserAccountMapper userAccountMapper;
-
-    private final QuotaUpdateLogMapper quotaUpdateLogMapper;
 
     private final QuotaAccountManager quotaAccountManager;
 
@@ -95,7 +102,26 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
     }
 
     @Override
-    public QuotaAccountDto getQuotaAccountByUserAndType(Long userId, Integer accountType) {
-        return null;
+    public UserAccountDto getQuotaAccountByUserAndType(Long userId) {
+        UserAccountDto result = new UserAccountDto();
+        result.setUserId(userId);
+
+        final UserAccountPo userAccountPo = userAccountMapper.selectByUser(userId);
+        if (userAccountPo == null) {
+            logger.warn("查询的账户不存在, userId:{}", userId);
+            return result;
+        }
+        final List<QuotaAccountPo> quotaAccountPos = quotaAccountMapper.selectByUser(userId);
+        if (CollectionUtils.isEmpty(quotaAccountPos)) {
+            logger.warn("查询的额度账号为空, userId:{}", userId);
+            return result;
+        }
+
+        result.setQuotaTotal(userAccountPo.getQuota());
+        final List<QuotaAccountDto> quotaAccountDtos = quotaAccountPos.stream().map(QuotaAccountDto::fromPo).filter(
+                Objects::nonNull).collect(Collectors.toList());
+        result.setQuotaAccountDtos(quotaAccountDtos);
+
+        return result;
     }
 }
