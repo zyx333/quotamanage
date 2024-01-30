@@ -1,10 +1,12 @@
 package com.quiz.quotamanage.data;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.sql.Timestamp;
 
 @Data
+@Builder
 public class QuotaAccountPo {
 
     private Long id;

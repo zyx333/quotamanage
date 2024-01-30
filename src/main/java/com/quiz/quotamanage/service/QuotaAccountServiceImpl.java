@@ -1,7 +1,12 @@
 package com.quiz.quotamanage.service;
 
+import com.quiz.quotamanage.BizException;
 import com.quiz.quotamanage.data.QuotaAccountDto;
+import com.quiz.quotamanage.data.QuotaAccountPo;
+import com.quiz.quotamanage.data.QuotaLogTypeEnum;
+import com.quiz.quotamanage.data.QuotaUpdateLogPo;
 import com.quiz.quotamanage.data.UserAccountPo;
+import com.quiz.quotamanage.manager.QuotaAccountManager;
 import com.quiz.quotamanage.mapper.QuotaAccountMapper;
 import com.quiz.quotamanage.mapper.QuotaUpdateLogMapper;
 import com.quiz.quotamanage.mapper.UserAccountMapper;
@@ -21,17 +26,22 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
 
     private final QuotaUpdateLogMapper quotaUpdateLogMapper;
 
-    @Override
-    @Transactional(rollbackFor = Exception.class, value = "transactionManager") // 定义manager todo
-    public void initAccount(Long userId, Integer accountType) {
-        final UserAccountPo userAccountPo = userAccountMapper.selectByUser(userId);
-        if (userAccountPo != null) {
+    private final QuotaAccountManager quotaAccountManager;
 
+    @Override
+    public void initAccount(Long userId, Integer accountType, Double quota) throws BizException {
+        // todo 分布式锁
+        final UserAccountPo existedAccount = userAccountMapper.selectByUser(userId);
+        if (existedAccount != null) {
+            throw new BizException("账号已存在");
         }
+
+        quotaAccountManager.initAccount(userId, accountType, quota);
 
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, value = "transactionManager") // 定义manager todo
     public void addQuotaAccount(Long userId, Integer accountType, Double quota) {
         // 添加额度汇总表
         // todo 更新额度时，记录变更日志
@@ -39,6 +49,7 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, value = "transactionManager") // 定义manager todo
     public void deductQuotaAccount(Long userId, Integer accountType, Double quota) {
 
     }

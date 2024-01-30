@@ -1,5 +1,6 @@
 package com.quiz.quotamanage.service;
 
+import com.quiz.quotamanage.BizException;
 import com.quiz.quotamanage.data.QuotaAccountDto;
 
 public interface QuotaAccountService {
@@ -9,7 +10,7 @@ public interface QuotaAccountService {
      * @param userId
      * @param accountType
      */
-    void initAccount(Long userId, Integer accountType);
+    void initAccount(Long userId, Integer accountType, Double quota) throws BizException;
 
     /**
      * 提高额度
