@@ -5,24 +5,27 @@ import lombok.Data;
 import java.sql.Timestamp;
 
 @Data
-public class QuotaUpdateLogPo {
+public class UserAccountPo {
 
     private Long id;
 
     /**
-     * 账号名称
+     * 用户 id
      */
-    private Long quotaAccountId;
+    private Long userId;
+
 
     /**
-     * 变更类型
-     */
-    private Integer type;
-
-    /**
-     * 变更额度
+     * 账户额度
      */
     private Double quota;
+
+
+    /**
+     * 删除状态，0  否， 1  是
+     */
+    private Integer deleted;
+
 
     /**
      * 创建时间
