@@ -39,7 +39,7 @@ public class QuotaAccountManager {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public void initAccount(Long userId, Integer accountType, Double quota) throws BizException {
+    public void initAccount(Long userId, Byte accountType, Double quota) throws BizException {
 
         try {
             UserAccountPo userAccountPo = UserAccountPo.builder().userId(userId).quota(quota).build();
@@ -59,7 +59,7 @@ public class QuotaAccountManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void addQuotaAccount(Long userId, Integer accountType, Double quota) throws BizException {
+    public void addQuotaAccount(Long userId, Byte accountType, Double quota) throws BizException {
 
         try {
             QuotaAccountPo quotaAccountPo = QuotaAccountPo.builder().userId(userId).accountType(accountType).quota(quota)
@@ -81,7 +81,7 @@ public class QuotaAccountManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateQuota(final Long userId, final Integer accountType, final Double quota, Long quotaAccountId)
+    public void updateQuota(final Long userId, final Byte accountType, final Double quota, Long quotaAccountId)
             throws BizException {
         try {
             QuotaAccountPo newQuota =

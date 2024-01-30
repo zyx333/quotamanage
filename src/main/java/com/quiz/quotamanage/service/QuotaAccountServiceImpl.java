@@ -1,8 +1,10 @@
 package com.quiz.quotamanage.service;
 
 import com.quiz.quotamanage.BizException;
+import com.quiz.quotamanage.data.AccountTypeEnum;
 import com.quiz.quotamanage.data.QuotaAccountDto;
 import com.quiz.quotamanage.data.QuotaAccountPo;
+import com.quiz.quotamanage.data.QuotaLogTypeEnum;
 import com.quiz.quotamanage.data.UserAccountDto;
 import com.quiz.quotamanage.data.UserAccountPo;
 import com.quiz.quotamanage.manager.QuotaAccountManager;
@@ -32,8 +34,12 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
     private final QuotaAccountManager quotaAccountManager;
 
     @Override
-    public void initAccount(Long userId, Integer accountType, Double quota) throws BizException {
+    public void initAccount(Long userId, Byte accountType, Double quota) throws BizException {
+        if (AccountTypeEnum.getEnumByType(accountType) == null) {
+            throw new BizException("账号类型不存在");
+        }
         // todo 分布式锁
+
         final UserAccountPo existedAccount = userAccountMapper.selectByUser(userId);
         if (existedAccount != null) {
             throw new BizException("账号已存在");
@@ -44,7 +50,7 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
     }
 
     @Override
-    public void addQuotaAccount(Long userId, Integer accountType, Double quota) throws BizException {
+    public void addQuotaAccount(Long userId, Byte accountType, Double quota) throws BizException {
         // 前置检查
         preCheckAddQuotaAccount(userId, accountType, quota);
 
@@ -53,7 +59,7 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
 
     }
 
-    private void preCheckAddQuotaAccount(Long userId, Integer accountType, Double quota) throws BizException {
+    private void preCheckAddQuotaAccount(Long userId, Byte accountType, Double quota) throws BizException {
         final UserAccountPo existedAccount = userAccountMapper.selectByUser(userId);
         if (existedAccount == null) {
             throw new BizException("账号不存在，请先初始化账号");
@@ -66,7 +72,7 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
     }
 
     @Override
-    public void increaseQuota(final Long userId, final Integer accountType, final Double quota) throws BizException {
+    public void increaseQuota(final Long userId, final Byte accountType, final Double quota) throws BizException {
         if (quota <= 0) {
             throw new BizException("额度必须大于0");
         }
@@ -82,7 +88,7 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void decreaseQuota(Long userId, Integer accountType, Double quota) throws BizException {
+    public void decreaseQuota(Long userId, Byte accountType, Double quota) throws BizException {
         if (quota >= 0) {
             throw new BizException("额度必须小于0");
         }

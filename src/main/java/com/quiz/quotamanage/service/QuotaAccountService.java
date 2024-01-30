@@ -1,7 +1,6 @@
 package com.quiz.quotamanage.service;
 
 import com.quiz.quotamanage.BizException;
-import com.quiz.quotamanage.data.QuotaAccountDto;
 import com.quiz.quotamanage.data.UserAccountDto;
 
 public interface QuotaAccountService {
@@ -11,7 +10,7 @@ public interface QuotaAccountService {
      * @param userId
      * @param accountType
      */
-    void initAccount(Long userId, Integer accountType, Double quota) throws BizException;
+    void initAccount(Long userId, Byte accountType, Double quota) throws BizException;
 
     /**
      * 新增额度账户
@@ -19,7 +18,7 @@ public interface QuotaAccountService {
      * @param accountType
      * @param quota
      */
-    void addQuotaAccount(Long userId, Integer accountType, Double quota) throws BizException;
+    void addQuotaAccount(Long userId, Byte accountType, Double quota) throws BizException;
 
     /**
      * 提高额度
@@ -27,14 +26,14 @@ public interface QuotaAccountService {
      * @param accountType
      * @param quota
      */
-    void increaseQuota(Long userId, Integer accountType, Double quota) throws BizException;
+    void increaseQuota(Long userId, Byte accountType, Double quota) throws BizException;
     /**
      * 降低额度
      * @param userId
      * @param accountType
      * @param quota
      */
-    void decreaseQuota(Long userId, Integer accountType, Double quota) throws BizException;
+    void decreaseQuota(Long userId, Byte accountType, Double quota) throws BizException;
 
     /**
      * 查询额度账号

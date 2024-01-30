@@ -24,7 +24,7 @@ public class QuotaAccountPo {
     /**
      * 账户类型
      */
-    private Integer accountType;
+    private Byte accountType;
 
     /**
      * 账户额度

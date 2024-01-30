@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface QuotaAccountMapper {
 
-    QuotaAccountPo selectByUserAndType(@Param("userId") Long userId, @Param("accountType") Integer accountType);
+    QuotaAccountPo selectByUserAndType(@Param("userId") Long userId, @Param("accountType") Byte accountType);
 
     List<QuotaAccountPo> selectByUser(@Param("userId") Long userId);
 
