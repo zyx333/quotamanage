@@ -13,12 +13,10 @@ import com.quiz.quotamanage.mapper.UserAccountMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +25,8 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(QuotaAccountServiceImpl.class);
 
     private static final String INIT_ACCOUNT_LOCK = "initAccountLock_%s";
+
+    private static final String QUOTA_ACCOUNT_LOCK = "quotaAccountLock_%s_%s";
 
     private static final Double DEFAULT_QUOTA = 10000.0;
 
@@ -93,13 +93,21 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
             throw new BizException("额度类型不存在");
         }
 
-        // 提升额度
-        quotaAccountManager.updateQuota(userId, accountType, quota, existedQuota.getId());
+        String lockKey = String.format(QUOTA_ACCOUNT_LOCK, userId, accountType);
+        if (!LockUtil.lock(lockKey)) {
+            throw new BizException("请稍后重试");
+        }
+
+        try {
+            // 提升额度
+            quotaAccountManager.updateQuota(userId, accountType, quota, existedQuota.getId());
+        } finally {
+            LockUtil.releaseLock(lockKey);
+        }
     }
 
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void decreaseQuota(Long userId, Byte accountType, Double quota) throws BizException {
         if (quota >= 0) {
             throw new BizException("额度必须小于0");
@@ -114,8 +122,17 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
             throw new BizException("额度不足");
         }
 
-        // 降低额度
-        quotaAccountManager.updateQuota(userId, accountType, quota, existedQuota.getId());
+        String lockKey = String.format(QUOTA_ACCOUNT_LOCK, userId, accountType);
+        if (!LockUtil.lock(lockKey)) {
+            throw new BizException("请稍后重试");
+        }
+
+        try {
+            // 降低额度
+            quotaAccountManager.updateQuota(userId, accountType, quota, existedQuota.getId());
+        } finally {
+            LockUtil.releaseLock(lockKey);
+        }
 
     }
 
