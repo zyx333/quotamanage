@@ -10,15 +10,14 @@ public interface QuotaAccountService {
      * @param userId
      * @param accountType
      */
-    void initAccount(Long userId, Byte accountType, Double quota) throws BizException;
+    void initAccount(Long userId, Byte accountType) throws BizException;
 
     /**
      * 新增额度账户
      * @param userId
      * @param accountType
-     * @param quota
      */
-    void addQuotaAccount(Long userId, Byte accountType, Double quota) throws BizException;
+    void addQuotaAccount(Long userId, Byte accountType) throws BizException;
 
     /**
      * 提高额度

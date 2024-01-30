@@ -4,12 +4,10 @@ import com.quiz.quotamanage.BizException;
 import com.quiz.quotamanage.data.AccountTypeEnum;
 import com.quiz.quotamanage.data.QuotaAccountDto;
 import com.quiz.quotamanage.data.QuotaAccountPo;
-import com.quiz.quotamanage.data.QuotaLogTypeEnum;
 import com.quiz.quotamanage.data.UserAccountDto;
 import com.quiz.quotamanage.data.UserAccountPo;
 import com.quiz.quotamanage.manager.QuotaAccountManager;
 import com.quiz.quotamanage.mapper.QuotaAccountMapper;
-import com.quiz.quotamanage.mapper.QuotaUpdateLogMapper;
 import com.quiz.quotamanage.mapper.UserAccountMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -27,6 +24,8 @@ import java.util.stream.Collectors;
 public class QuotaAccountServiceImpl implements QuotaAccountService {
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(QuotaAccountServiceImpl.class);
 
+    private static final Double DEFAULT_QUOTA = 10000.0;
+
     private final QuotaAccountMapper quotaAccountMapper;
 
     private final UserAccountMapper userAccountMapper;
@@ -34,7 +33,7 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
     private final QuotaAccountManager quotaAccountManager;
 
     @Override
-    public void initAccount(Long userId, Byte accountType, Double quota) throws BizException {
+    public void initAccount(Long userId, Byte accountType) throws BizException {
         if (AccountTypeEnum.getEnumByType(accountType) == null) {
             throw new BizException("账号类型不存在");
         }
@@ -45,21 +44,21 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
             throw new BizException("账号已存在");
         }
 
-        quotaAccountManager.initAccount(userId, accountType, quota);
+        quotaAccountManager.initAccount(userId, accountType, DEFAULT_QUOTA);
 
     }
 
     @Override
-    public void addQuotaAccount(Long userId, Byte accountType, Double quota) throws BizException {
+    public void addQuotaAccount(Long userId, Byte accountType) throws BizException {
         // 前置检查
-        preCheckAddQuotaAccount(userId, accountType, quota);
+        preCheckAddQuotaAccount(userId, accountType);
 
         // 添加额度账号
-        quotaAccountManager.addQuotaAccount(userId, accountType, quota);
+        quotaAccountManager.addQuotaAccount(userId, accountType, DEFAULT_QUOTA);
 
     }
 
-    private void preCheckAddQuotaAccount(Long userId, Byte accountType, Double quota) throws BizException {
+    private void preCheckAddQuotaAccount(Long userId, Byte accountType) throws BizException {
         final UserAccountPo existedAccount = userAccountMapper.selectByUser(userId);
         if (existedAccount == null) {
             throw new BizException("账号不存在，请先初始化账号");
