@@ -3,8 +3,6 @@ package com.quiz.quotamanage.service;
 import com.quiz.quotamanage.BizException;
 import com.quiz.quotamanage.data.QuotaAccountDto;
 import com.quiz.quotamanage.data.QuotaAccountPo;
-import com.quiz.quotamanage.data.QuotaLogTypeEnum;
-import com.quiz.quotamanage.data.QuotaUpdateLogPo;
 import com.quiz.quotamanage.data.UserAccountPo;
 import com.quiz.quotamanage.manager.QuotaAccountManager;
 import com.quiz.quotamanage.mapper.QuotaAccountMapper;
@@ -13,8 +11,6 @@ import com.quiz.quotamanage.mapper.UserAccountMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.concurrent.ThreadPoolExecutor;
 
 @Service
 @RequiredArgsConstructor
@@ -41,16 +37,60 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class, value = "transactionManager") // 定义manager todo
-    public void addQuotaAccount(Long userId, Integer accountType, Double quota) {
-        // 添加额度汇总表
-        // todo 更新额度时，记录变更日志
+    public void addQuotaAccount(Long userId, Integer accountType, Double quota) throws BizException {
+        // 前置检查
+        preCheckAddQuotaAccount(userId, accountType, quota);
+
+        // 添加额度账号
+        quotaAccountManager.addQuotaAccount(userId, accountType, quota);
 
     }
 
+    private void preCheckAddQuotaAccount(Long userId, Integer accountType, Double quota) throws BizException {
+        final UserAccountPo existedAccount = userAccountMapper.selectByUser(userId);
+        if (existedAccount == null) {
+            throw new BizException("账号不存在，请先初始化账号");
+        }
+
+        final QuotaAccountPo existedQuotaAccount = quotaAccountMapper.selectByUserAndType(userId, accountType);
+        if (existedQuotaAccount != null) {
+            throw new BizException("额度类型已存在");
+        }
+    }
+
     @Override
-    @Transactional(rollbackFor = Exception.class, value = "transactionManager") // 定义manager todo
-    public void deductQuotaAccount(Long userId, Integer accountType, Double quota) {
+    public void increaseQuota(final Long userId, final Integer accountType, final Double quota) throws BizException {
+        if (quota <= 0) {
+            throw new BizException("额度必须大于0");
+        }
+        final QuotaAccountPo existedQuota = quotaAccountMapper.selectByUserAndType(userId, accountType);
+        if (existedQuota == null) {
+            throw new BizException("额度类型不存在");
+        }
+
+        // 提升额度
+        quotaAccountManager.updateQuota(userId, accountType, quota, existedQuota.getId());
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void decreaseQuota(Long userId, Integer accountType, Double quota) throws BizException {
+        if (quota >= 0) {
+            throw new BizException("额度必须小于0");
+        }
+
+        final QuotaAccountPo existedQuota = quotaAccountMapper.selectByUserAndType(userId, accountType);
+        if (existedQuota == null) {
+            throw new BizException("额度类型不存在");
+        }
+
+        if (existedQuota.getQuota() + quota < 0) {
+            throw new BizException("额度不足");
+        }
+
+        // 降低额度
+        quotaAccountManager.updateQuota(userId, accountType, quota, existedQuota.getId());
 
     }
 
