@@ -8,8 +8,8 @@
             quota_account_id,
             account_type,
             quota,
-            updatedTime,
-            createdTime
+            lastmodified,
+            created
     </sql>
 
     <insert id="insertQuotaLog" useGeneratedKeys="true" keyProperty="id">

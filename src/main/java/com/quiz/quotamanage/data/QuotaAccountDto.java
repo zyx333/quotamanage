@@ -44,8 +44,8 @@ public class QuotaAccountDto {
         quotaAccountDto.setUserId(quotaAccountPo.getUserId());
         quotaAccountDto.setAccountType(quotaAccountPo.getAccountType());
         quotaAccountDto.setQuota(quotaAccountPo.getQuota());
-        quotaAccountDto.setCreatedTime(quotaAccountPo.getCreatedTime());
-        quotaAccountDto.setUpdatedTime(quotaAccountPo.getUpdatedTime());
+        quotaAccountDto.setCreatedTime(quotaAccountPo.getCreated());
+        quotaAccountDto.setUpdatedTime(quotaAccountPo.getLastmodified());
 
         return quotaAccountDto;
 

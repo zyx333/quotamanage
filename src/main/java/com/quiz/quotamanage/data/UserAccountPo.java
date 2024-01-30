@@ -32,11 +32,11 @@ public class UserAccountPo {
     /**
      * 创建时间
      */
-    private Timestamp createdTime;
+    private Timestamp created;
 
     /**
      * 更新时间
      */
-    private Timestamp updatedTime;
+    private Timestamp lastmodified;
 
 }

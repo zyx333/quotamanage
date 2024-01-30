@@ -8,8 +8,8 @@
             user_id,
             quota,
             deleted,
-            updatedTime,
-            createdTime,
+            lastmodified,
+            created
     </sql>
 
     <insert id="insertUserAccount" useGeneratedKeys="true" keyProperty="id">

@@ -27,9 +27,9 @@ public class QuotaScheduledService {
 
         threadPoolExecutor.execute(() -> {
 
-//            List<QuotaAccountPo> accountPos = quotaAccountMapper.selectByUser(1L);
-            System.out.println("accountPos");
+            List<QuotaAccountPo> accountPos = quotaAccountMapper.selectByUser(1L);
             logger.info("mockConcurrent:{}", System.currentTimeMillis());
+            logger.info("result:{}", accountPos);
 
         });
 
