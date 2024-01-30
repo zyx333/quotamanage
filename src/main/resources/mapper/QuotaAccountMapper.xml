@@ -5,7 +5,6 @@
 
     <sql id="Base_Column_List">
             id,
-            account_name,
             user_id,
             account_type,
             quota,
@@ -15,8 +14,8 @@
     </sql>
 
     <insert id="insertQuotaAccount" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO quota_account(account_name, user_id, account_type, quota)
-        VALUES (#{accountName}, #{userId}, #{accountType}, #{quota});
+        INSERT INTO quota_account(user_id, account_type, quota)
+        VALUES (#{userId}, #{accountType}, #{quota});
     </insert>
 
     <select id="selectByUser" resultType="com.quiz.quotamanage.data.QuotaAccountPo">

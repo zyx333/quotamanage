@@ -17,7 +17,7 @@ public class QuotaUpdateLogPo {
     private Long quotaAccountId;
 
     /**
-     * 变更类型
+     * 变更类型, {@link QuotaLogTypeEnum}
      */
     private Byte updateType;
 

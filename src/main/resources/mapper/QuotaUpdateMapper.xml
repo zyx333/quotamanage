@@ -8,22 +8,13 @@
             quota_account_id,
             account_type,
             quota,
-            deleted,
             updatedTime,
-            createdTime,
+            createdTime
     </sql>
 
     <insert id="insertQuotaLog" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO quota_update_log(quota_account_id, update_type, quota)
         VALUES (#{quotaAccountId}, #{updateType}, #{quota});
     </insert>
-
-    <select id="selectByAccount" resultType="com.quiz.quotamanage.data.QuotaUpdateLogPo">
-        SELECT <include refid="Base_Column_List"/>
-        FROM quota_update_log
-        WHERE quota_account_id = #{quotaAccountId}
-        AND deleted = 0
-    </select>
-
 
 </mapper>

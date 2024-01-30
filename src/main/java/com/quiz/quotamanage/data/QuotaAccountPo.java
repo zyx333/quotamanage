@@ -12,11 +12,6 @@ public class QuotaAccountPo {
     private Long id;
 
     /**
-     * 账号名称
-     */
-    private String accountName;
-
-    /**
      * 用户 id
      */
     private Long userId;
