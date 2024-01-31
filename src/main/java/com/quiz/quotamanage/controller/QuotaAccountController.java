@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class QuotaAccountController {
+
     private final QuotaAccountService quotaAccountService;
 
     @PostMapping("/account/init")

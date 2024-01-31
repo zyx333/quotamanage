@@ -8,4 +8,7 @@ mybatis:
   config-location: classpath:mybatis-config.xml
   mapper-locations: classpath:mapper/*.xml
 
+server:
+  port: 12345
+
 
