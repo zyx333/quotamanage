@@ -1,6 +1,7 @@
 package com.quiz.quotamanage.controller;
 
 import com.quiz.quotamanage.BizException;
+import com.quiz.quotamanage.data.Result;
 import com.quiz.quotamanage.data.UserAccountDto;
 import com.quiz.quotamanage.data.UserAccountParamVo;
 import com.quiz.quotamanage.service.QuotaAccountService;
@@ -19,32 +20,36 @@ public class QuotaAccountController {
     private final QuotaAccountService quotaAccountService;
 
     @PostMapping("/account/init")
-    public void initAccount(@RequestBody UserAccountParamVo paramVo) throws BizException {
+    public Result<Boolean> initAccount(@RequestBody UserAccountParamVo paramVo) throws BizException {
 
         quotaAccountService.initAccount(paramVo.getUserId(), paramVo.getAccountType());
+        return Result.success(true);
     }
 
     @PutMapping("/account/quota/add")
-    public void addQuotaAccount(@RequestBody UserAccountParamVo paramVo) throws BizException {
+    public Result<Boolean> addQuotaAccount(@RequestBody UserAccountParamVo paramVo) throws BizException {
         quotaAccountService.addQuotaAccount(paramVo.getUserId(), paramVo.getAccountType());
+        return Result.success(true);
     }
 
     @PutMapping("/account/quota/increase")
-    public void increaseQuota(@RequestBody UserAccountParamVo paramVo) throws BizException {
+    public Result<Boolean> increaseQuota(@RequestBody UserAccountParamVo paramVo) throws BizException {
         quotaAccountService.increaseQuota(paramVo.getUserId(), paramVo.getAccountType(), paramVo.getQuota());
+        return Result.success(true);
     }
 
     @PutMapping("/account/quota/decrease")
-    public void decreaseQuota(@RequestBody UserAccountParamVo paramVo) throws BizException {
+    public Result<Boolean> decreaseQuota(@RequestBody UserAccountParamVo paramVo) throws BizException {
         quotaAccountService.decreaseQuota(paramVo.getUserId(), paramVo.getAccountType(), paramVo.getQuota());
+        return Result.success(true);
     }
 
     @GetMapping("/account/quota")
-    public Double getQuotaAccount(@RequestParam("userId") Long userId) {
+    public Result<Double> getQuotaAccount(@RequestParam("userId") Long userId) {
 
         UserAccountDto account = quotaAccountService.getQuotaAccountByUserAndType(userId);
 
-        return account == null ? 0.0 : account.getQuotaTotal();
+        return Result.success(account == null ? 0.0 : account.getQuotaTotal());
     }
 
 }
