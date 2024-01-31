@@ -2,7 +2,6 @@ package com.quiz.quotamanage.data;
 
 import lombok.Data;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 @Data

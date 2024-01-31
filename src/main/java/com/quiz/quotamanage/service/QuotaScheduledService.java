@@ -1,5 +1,6 @@
 package com.quiz.quotamanage.service;
 
+import com.quiz.quotamanage.BizException;
 import com.quiz.quotamanage.data.QuotaAccountPo;
 import com.quiz.quotamanage.mapper.QuotaAccountMapper;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Service
@@ -20,6 +22,8 @@ public class QuotaScheduledService {
     private final ThreadPoolExecutor threadPoolExecutor;
 
     private final QuotaAccountMapper quotaAccountMapper;
+
+    private final QuotaAccountService quotaAccountService;
 
 
     @Scheduled(cron = "0/10 * * * * ?")
@@ -33,6 +37,18 @@ public class QuotaScheduledService {
 
         });
 
+    }
+
+    @Scheduled
+    public void initAccount() {
+        Random random = new Random();
+        final long userId = random.nextLong();
+        final int accountType = random.nextInt(3);
+        try {
+            quotaAccountService.initAccount(userId, (byte) accountType);
+        } catch (BizException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
