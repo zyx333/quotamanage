@@ -1,4 +1,3 @@
-
 package com.quiz.quotamanage;
 
 /**
@@ -16,6 +15,6 @@ public class LockUtil {
     }
 
     public static void releaseLock(String key) {
-
+        // 释放分布式锁
     }
 }

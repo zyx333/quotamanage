@@ -92,7 +92,7 @@ public class QuotaAccountManager {
             quotaUpdateLogMapper.insertQuotaLog(logPo);
         } catch (Exception e) {
             logger.error("increaseQuota failed", e);
-            throw new BizException("提升额度失败");
+            throw new BizException("更新额度失败");
         }
     }
 
