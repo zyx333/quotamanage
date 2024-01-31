@@ -38,14 +38,7 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
 
     @Override
     public void initAccount(Long userId, Byte accountType) throws BizException {
-        if (AccountTypeEnum.getEnumByType(accountType) == null) {
-            throw new BizException("账号类型不存在");
-        }
-
-        final UserAccountPo existedAccount = userAccountMapper.selectByUser(userId);
-        if (existedAccount != null) {
-            throw new BizException("账号已存在");
-        }
+        preCheckInitAccount(userId, accountType);
 
         // 分布式锁
         final String lockKey = String.format(INIT_ACCOUNT_LOCK, userId);
@@ -61,6 +54,23 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
 
     }
 
+    private void preCheckInitAccount(final Long userId, final Byte accountType) throws BizException {
+        if (AccountTypeEnum.getEnumByType(accountType) == null) {
+            throw new BizException("账号类型不存在");
+        }
+
+        final UserAccountPo existedAccount;
+        try {
+            existedAccount = userAccountMapper.selectByUser(userId);
+        } catch (Exception e) {
+            logger.error("preCheckInitAccount failed", e);
+            throw new BizException("账号初始化失败");
+        }
+        if (existedAccount != null) {
+            throw new BizException("账号已存在");
+        }
+    }
+
     @Override
     public void addQuotaAccount(Long userId, Byte accountType) throws BizException {
         // 前置检查
@@ -72,14 +82,21 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
     }
 
     private void preCheckAddQuotaAccount(Long userId, Byte accountType) throws BizException {
-        final UserAccountPo existedAccount = userAccountMapper.selectByUser(userId);
-        if (existedAccount == null) {
-            throw new BizException("账号不存在，请先初始化账号");
-        }
+        try {
+            final UserAccountPo existedAccount = userAccountMapper.selectByUser(userId);
+            if (existedAccount == null) {
+                throw new BizException("账号不存在，请先初始化账号");
+            }
 
-        final QuotaAccountPo existedQuotaAccount = quotaAccountMapper.selectByUserAndType(userId, accountType);
-        if (existedQuotaAccount != null) {
-            throw new BizException("额度类型已存在");
+            final QuotaAccountPo existedQuotaAccount = quotaAccountMapper.selectByUserAndType(userId, accountType);
+            if (existedQuotaAccount != null) {
+                throw new BizException("额度类型已存在");
+            }
+        } catch (BizException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("preCheckAddQuotaAccount failed", e);
+            throw new BizException("添加额度账号失败");
         }
     }
 
