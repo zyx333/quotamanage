@@ -4,6 +4,7 @@ import com.quiz.quotamanage.BizException;
 import com.quiz.quotamanage.data.Result;
 import com.quiz.quotamanage.data.UserAccountDto;
 import com.quiz.quotamanage.data.UserAccountParamVo;
+import com.quiz.quotamanage.data.UserAccountVo;
 import com.quiz.quotamanage.service.QuotaAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,11 +46,11 @@ public class QuotaAccountController {
     }
 
     @GetMapping("/account/quota")
-    public Result<Double> getQuotaAccount(@RequestParam("userId") Long userId) {
+    public Result<UserAccountVo> getQuotaAccount(@RequestParam("userId") Long userId) {
 
         UserAccountDto account = quotaAccountService.getQuotaAccountByUserAndType(userId);
 
-        return Result.success(account == null ? 0.0 : account.getQuotaTotal());
+        return Result.success(UserAccountVo.fromDto(account));
     }
 
 }
