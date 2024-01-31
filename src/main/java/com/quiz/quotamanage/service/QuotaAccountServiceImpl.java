@@ -105,7 +105,13 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
         if (quota <= 0) {
             throw new BizException("额度必须大于0");
         }
-        final QuotaAccountPo existedQuota = quotaAccountMapper.selectByUserAndType(userId, accountType);
+        final QuotaAccountPo existedQuota;
+        try {
+            existedQuota = quotaAccountMapper.selectByUserAndType(userId, accountType);
+        } catch (Exception e) {
+            logger.error("increaseQuota failed. userId:{}, accountType:{}, quota:{}", userId, accountType, quota, e);
+            throw new BizException("提升额度失败");
+        }
         if (existedQuota == null) {
             throw new BizException("额度类型不存在");
         }
@@ -130,7 +136,13 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
             throw new BizException("额度必须小于0");
         }
 
-        final QuotaAccountPo existedQuota = quotaAccountMapper.selectByUserAndType(userId, accountType);
+        final QuotaAccountPo existedQuota;
+        try {
+            existedQuota = quotaAccountMapper.selectByUserAndType(userId, accountType);
+        } catch (Exception e) {
+            logger.error("decreaseQuota failed. userId:{}, accountType:{}, quota:{}", userId, accountType, quota, e);
+            throw new BizException("降低额度失败");
+        }
         if (existedQuota == null) {
             throw new BizException("额度类型不存在");
         }
@@ -158,14 +170,21 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
         UserAccountDto result = new UserAccountDto();
         result.setUserId(userId);
 
-        final UserAccountPo userAccountPo = userAccountMapper.selectByUser(userId);
-        if (userAccountPo == null) {
-            logger.warn("查询的账户不存在, userId:{}", userId);
-            return result;
-        }
-        final List<QuotaAccountPo> quotaAccountPos = quotaAccountMapper.selectByUser(userId);
-        if (CollectionUtils.isEmpty(quotaAccountPos)) {
-            logger.warn("查询的额度账号为空, userId:{}", userId);
+        final UserAccountPo userAccountPo;
+        final List<QuotaAccountPo> quotaAccountPos;
+        try {
+            userAccountPo = userAccountMapper.selectByUser(userId);
+            if (userAccountPo == null) {
+                logger.warn("查询的账户不存在, userId:{}", userId);
+                return result;
+            }
+            quotaAccountPos = quotaAccountMapper.selectByUser(userId);
+            if (CollectionUtils.isEmpty(quotaAccountPos)) {
+                logger.warn("查询的额度账号为空, userId:{}", userId);
+                return result;
+            }
+        } catch (Exception e) {
+            logger.error("getQuotaAccountByUserAndType failed. userId:{}", userId, e);
             return result;
         }
 
