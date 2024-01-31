@@ -10,7 +10,8 @@ public class CommonConfig {
 
     @Bean("threadPoolExecutor")
     public ThreadPoolExecutor getThreadPoolExecutor() {
-        return new ThreadPoolExecutor(5, 10, 60, java.util.concurrent.TimeUnit.SECONDS, new java.util.concurrent.LinkedBlockingQueue<>());
+        return new ThreadPoolExecutor(10, 20, 60, java.util.concurrent.TimeUnit.SECONDS,
+                new java.util.concurrent.LinkedBlockingQueue<>());
     }
 
 }

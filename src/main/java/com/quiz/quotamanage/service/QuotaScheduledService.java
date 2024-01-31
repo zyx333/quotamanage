@@ -1,16 +1,13 @@
 package com.quiz.quotamanage.service;
 
 import com.quiz.quotamanage.BizException;
-import com.quiz.quotamanage.data.QuotaAccountPo;
 import com.quiz.quotamanage.data.UserAccountDto;
-import com.quiz.quotamanage.mapper.QuotaAccountMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -22,23 +19,8 @@ public class QuotaScheduledService {
 
     private final ThreadPoolExecutor threadPoolExecutor;
 
-    private final QuotaAccountMapper quotaAccountMapper;
-
     private final QuotaAccountService quotaAccountService;
 
-
-    @Scheduled(cron = "0/10 * * * * ?")
-    public void mockConcurrent() {
-
-        threadPoolExecutor.execute(() -> {
-
-            List<QuotaAccountPo> accountPos = quotaAccountMapper.selectByUser(1L);
-            logger.info("mockConcurrent:{}", System.currentTimeMillis());
-            logger.info("result:{}", accountPos);
-
-        });
-
-    }
 
     @Scheduled(fixedDelay = 1000 * 60)
     public void initAccount() {
@@ -108,6 +90,42 @@ public class QuotaScheduledService {
             logger.info("getQuotaAccountByUserAndType result:{}", userAccountDto);
         } catch (Exception e) {
             logger.error("getQuotaAccountByUserAndType failed. userId:{} ", userId, e);
+        }
+    }
+
+
+    @Scheduled(cron = "0 0/3 * * * ?")
+    public void concurrentTask() {
+
+        Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            final long userId = random.nextInt(100);
+            final int accountType = random.nextInt(3);
+            final QuotaTask task = new QuotaTask(userId, (byte) accountType);
+            threadPoolExecutor.execute(task);
+        }
+
+    }
+
+    class QuotaTask implements Runnable{
+        private final Long userId;
+
+        private final Byte accountType;
+
+        public QuotaTask(Long userId, Byte accountType) {
+            this.userId = userId;
+            this.accountType = accountType;
+        }
+
+        @Override
+        public void run() {
+            try {
+                logger.info("QuotaTask executed, userId:{}, accountType:{}", userId, accountType);
+                quotaAccountService.initAccount(userId, accountType);
+                quotaAccountService.decreaseQuota(userId, accountType, -100.0);
+            } catch (BizException e) {
+                logger.error("QuotaTask failed. userId:{}, accountType:{}", userId, accountType, e);
+            }
         }
     }
 
