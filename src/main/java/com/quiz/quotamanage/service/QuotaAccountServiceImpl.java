@@ -38,6 +38,7 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
 
     @Override
     public void initAccount(Long userId, Byte accountType) throws BizException {
+        // 前置检查
         preCheckInitAccount(userId, accountType);
 
         // 分布式锁
@@ -76,8 +77,18 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
         // 前置检查
         preCheckAddQuotaAccount(userId, accountType);
 
-        // 添加额度账号
-        quotaAccountManager.addQuotaAccount(userId, accountType, DEFAULT_QUOTA);
+        // 分布式锁
+        final String lockKey = String.format(QUOTA_ACCOUNT_LOCK, userId, accountType);
+        if (!LockUtil.lock(lockKey)) {
+            throw new BizException("请稍后重试");
+        }
+
+        try {
+            // 添加额度账号
+            quotaAccountManager.addQuotaAccount(userId, accountType, DEFAULT_QUOTA);
+        } finally {
+            LockUtil.releaseLock(lockKey);
+        }
 
     }
 
@@ -102,6 +113,7 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
 
     @Override
     public void increaseQuota(final Long userId, final Byte accountType, final Double quota) throws BizException {
+        // 前置检查
         if (quota <= 0) {
             throw new BizException("额度必须大于0");
         }
@@ -132,6 +144,7 @@ public class QuotaAccountServiceImpl implements QuotaAccountService {
 
     @Override
     public void decreaseQuota(Long userId, Byte accountType, Double quota) throws BizException {
+        // 前置检查
         if (quota >= 0) {
             throw new BizException("额度必须小于0");
         }
