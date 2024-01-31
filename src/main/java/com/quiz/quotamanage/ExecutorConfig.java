@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
-public class CommonConfig {
+public class ExecutorConfig {
 
     @Bean("threadPoolExecutor")
     public ThreadPoolExecutor getThreadPoolExecutor() {
