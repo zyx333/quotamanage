@@ -10,7 +10,7 @@ package com.quiz.quotamanage;
 public class LockUtil {
 
     public static boolean lock(String key) {
-        // TODO:
+        // 模拟分布式锁
 
         return true;
     }
